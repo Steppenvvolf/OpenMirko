@@ -39,6 +39,8 @@
 ## v0.5 — shipping
 
 - [x] Tauri desktop shell (dev + build scaffolded; native installer via `npm run desktop:build`)
+- [x] Dark/light theme (dark default) + settings panel (grid, snap)
+- [x] Custom app icon (brand + Tauri window/taskbar)
 - [ ] Native file dialogs (Tauri dialog/fs plugins) for smoother desktop export/import
 - [ ] Plugin / extension system
 - [ ] Accessibility pass

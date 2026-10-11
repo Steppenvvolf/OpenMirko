@@ -1,6 +1,7 @@
 import { Editor } from './editor'
 import { downloadPNG, downloadSVG, printBoard } from './export'
 import * as persist from './persist'
+import * as settings from './settings'
 import { templates } from './templates'
 import type { AlignAxis } from './layout'
 import type { Tool } from './types'
@@ -14,6 +15,12 @@ const marquee = document.getElementById('marquee')!
 const initial = persist.loadInitial()
 const editor = new Editor(viewport, canvas, svg, handles, marquee, initial.state)
 editor.boardId = initial.id
+
+// settings: theme, grid, snap (dark is the default theme)
+const appSettings = settings.loadSettings()
+settings.applyTheme(appSettings.theme)
+settings.applyGrid(appSettings.showGrid)
+editor.setSnap(appSettings.snap)
 
 // toolbar: tool buttons
 document.querySelectorAll<HTMLElement>('.toolbar [data-tool]').forEach((btn) => {
@@ -140,6 +147,46 @@ document.querySelectorAll<HTMLElement>('[data-distribute]').forEach((b) => {
 
 // context bar: snap toggle
 btn('cb-snap').addEventListener('click', () => editor.setSnap(!editor.snapEnabled))
+
+// settings panel: theme / grid / snap
+const settingsBtn = btn('btn-settings')
+const settingsPanel = document.getElementById('settings-panel')!
+const themeButtons = document.querySelectorAll<HTMLElement>('[data-theme]')
+const gridCb = btn('set-grid') as HTMLInputElement
+const snapCb = btn('set-snap') as HTMLInputElement
+
+settingsBtn.addEventListener('click', () => {
+  settingsPanel.hidden = !settingsPanel.hidden
+})
+
+themeButtons.forEach((b) => {
+  b.addEventListener('click', () => {
+    appSettings.theme = b.dataset.theme as 'dark' | 'light'
+    settings.applyTheme(appSettings.theme)
+    settings.saveSettings(appSettings)
+    themeButtons.forEach((x) => x.classList.toggle('active', x === b))
+  })
+})
+
+gridCb.checked = appSettings.showGrid
+gridCb.addEventListener('change', () => {
+  appSettings.showGrid = gridCb.checked
+  settings.applyGrid(appSettings.showGrid)
+  settings.saveSettings(appSettings)
+})
+
+snapCb.checked = appSettings.snap
+snapCb.addEventListener('change', () => {
+  appSettings.snap = snapCb.checked
+  editor.setSnap(snapCb.checked)
+  settings.saveSettings(appSettings)
+})
+
+document.addEventListener('click', (e) => {
+  const t = e.target as HTMLElement
+  if (settingsPanel.hidden) return
+  if (!settingsPanel.contains(t) && !settingsBtn.contains(t)) settingsPanel.hidden = true
+})
 
 // context bar: font size + z-order
 btn('cb-font-down').addEventListener('click', () => editor.setFontSize(-2))

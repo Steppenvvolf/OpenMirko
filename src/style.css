@@ -2,6 +2,53 @@
   box-sizing: border-box;
 }
 
+/* ---- theme tokens (dark is the default) ---- */
+:root {
+  --bg: #0f172a;
+  --dot: #334155;
+  --tb-bg: #1e293b;
+  --tb-fg: #e2e8f0;
+  --tb-border: #0f172a;
+  --tb-hover: #334155;
+  --tb-muted: #64748b;
+  --input-bg: #0f172a;
+  --input-border: #334155;
+  --input-fg: #e2e8f0;
+  --panel-bg: #1e293b;
+  --panel-fg: #e2e8f0;
+  --panel-border: #334155;
+  --panel-hover: #334155;
+  --panel-muted: #94a3b8;
+  --text-strong: #e2e8f0;
+  --connector: #94a3b8;
+  --accent: #3b82f6;
+  --accent-fg: #ffffff;
+  --danger: #b91c1c;
+}
+
+:root[data-theme="light"] {
+  --bg: #f8fafc;
+  --dot: #cbd5e1;
+  --tb-bg: #ffffff;
+  --tb-fg: #0f172a;
+  --tb-border: #e2e8f0;
+  --tb-hover: #f1f5f9;
+  --tb-muted: #64748b;
+  --input-bg: #f8fafc;
+  --input-border: #cbd5e1;
+  --input-fg: #0f172a;
+  --panel-bg: #ffffff;
+  --panel-fg: #0f172a;
+  --panel-border: #cbd5e1;
+  --panel-hover: #f1f5f9;
+  --panel-muted: #64748b;
+  --text-strong: #0f172a;
+  --connector: #64748b;
+  --accent: #2563eb;
+  --accent-fg: #ffffff;
+  --danger: #b91c1c;
+}
+
 html,
 body,
 #app {
@@ -22,9 +69,9 @@ body,
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
-  background: #1e293b;
-  color: #e2e8f0;
-  border-bottom: 1px solid #0f172a;
+  background: var(--tb-bg);
+  color: var(--tb-fg);
+  border-bottom: 1px solid var(--tb-border);
   flex: none;
   user-select: none;
 }
@@ -33,19 +80,29 @@ body,
   font-weight: 700;
   letter-spacing: 0.3px;
   margin-right: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.brand-icon {
+  height: 20px;
+  width: 20px;
+  border-radius: 4px;
+  vertical-align: middle;
 }
 
 .toolbar .sep {
   width: 1px;
   height: 20px;
-  background: #334155;
+  background: var(--tb-hover);
   margin: 0 4px;
 }
 
 .toolbar button {
   background: transparent;
   border: 1px solid transparent;
-  color: #cbd5e1;
+  color: var(--tb-fg);
   padding: 5px 10px;
   border-radius: 6px;
   cursor: pointer;
@@ -53,19 +110,19 @@ body,
 }
 
 .toolbar button:hover {
-  background: #334155;
-  color: #fff;
+  background: var(--tb-hover);
+  color: var(--tb-fg);
 }
 
 .toolbar button.active {
-  background: #3b82f6;
-  color: #fff;
+  background: var(--accent);
+  color: var(--accent-fg);
 }
 
 .toolbar .hint {
   margin-left: auto;
   font-size: 11px;
-  color: #64748b;
+  color: var(--tb-muted);
 }
 
 /* ---- viewport ---- */
@@ -73,10 +130,14 @@ body,
   position: relative;
   flex: 1;
   overflow: hidden;
-  background-color: #f8fafc;
-  background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+  background-color: var(--bg);
+  background-image: radial-gradient(circle, var(--dot) 1px, transparent 1px);
   cursor: default;
   touch-action: none;
+}
+
+#viewport.no-grid {
+  background-image: none;
 }
 
 #viewport.panning {
@@ -130,6 +191,11 @@ body,
   color: #0f172a;
 }
 
+/* free-standing text sits directly on the canvas, so it flips with theme */
+.shape-text .shape-body {
+  color: var(--text-strong);
+}
+
 .shape-sticky .shape-body {
   background: var(--shape-color, #fde68a);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
@@ -155,7 +221,7 @@ body,
 }
 
 .shape.selected .shape-body {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -173,7 +239,7 @@ body,
   stroke-linejoin: round;
 }
 .shape-pen.selected {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
@@ -211,17 +277,17 @@ body,
 }
 
 #connectors g.connector line {
-  stroke: #64748b;
+  stroke: var(--connector);
   stroke-width: 2.5;
 }
 
 #connectors g.connector.selected line {
-  stroke: #3b82f6;
+  stroke: var(--accent);
   stroke-width: 3.5;
 }
 
 #connectors g.connector.selected polygon {
-  fill: #3b82f6;
+  fill: var(--accent);
 }
 
 /* ---- resize handles ---- */
@@ -237,7 +303,7 @@ body,
   height: 10px;
   margin: -5px 0 0 -5px;
   background: #fff;
-  border: 2px solid #3b82f6;
+  border: 2px solid var(--accent);
   border-radius: 2px;
   pointer-events: all;
   cursor: nwse-resize;
@@ -247,7 +313,7 @@ body,
 #marquee {
   position: absolute;
   display: none;
-  border: 1px solid #3b82f6;
+  border: 1px solid var(--accent);
   background: rgba(59, 130, 246, 0.08);
   pointer-events: none;
 }
@@ -268,7 +334,7 @@ body,
   stroke-dasharray: 5 4;
 }
 #measure text {
-  fill: #b45309;
+  fill: #fbbf24;
   font-size: 13px;
   font-family: system-ui, sans-serif;
 }
@@ -280,9 +346,9 @@ body,
   padding: 10px;
   font: inherit;
   font-size: 15px;
-  color: #0f172a;
-  background: #fff;
-  border: 2px solid #3b82f6;
+  color: var(--text-strong);
+  background: var(--panel-bg);
+  border: 2px solid var(--accent);
   border-radius: 4px;
   outline: none;
   resize: both;
@@ -355,8 +421,8 @@ body,
   align-items: center;
   gap: 4px;
   padding: 6px 8px;
-  background: #fff;
-  border: 1px solid #cbd5e1;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   z-index: 5;
@@ -382,32 +448,32 @@ body,
   padding: 3px 6px;
   cursor: pointer;
   font-size: 12px;
-  color: #334155;
+  color: var(--panel-fg);
   min-width: 22px;
 }
 .contextbar button:hover {
-  background: #f1f5f9;
+  background: var(--panel-hover);
 }
 .contextbar button.active {
-  background: #3b82f6;
-  color: #fff;
+  background: var(--accent);
+  color: var(--accent-fg);
 }
 .swatch {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--panel-border);
   cursor: pointer;
   padding: 0;
 }
 .swatch:hover {
-  outline: 2px solid #3b82f6;
+  outline: 2px solid var(--accent);
 }
 #color-custom {
   width: 22px;
   height: 22px;
   padding: 0;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--panel-border);
   border-radius: 4px;
   cursor: pointer;
   background: none;
@@ -415,8 +481,73 @@ body,
 .cb-sep {
   width: 1px;
   height: 18px;
-  background: #e2e8f0;
+  background: var(--panel-border);
   margin: 0 4px;
+}
+
+/* ---- settings panel ---- */
+#settings-panel {
+  position: fixed;
+  top: 56px;
+  right: 12px;
+  z-index: 50;
+  width: 250px;
+  background: var(--panel-bg);
+  color: var(--panel-fg);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  padding: 12px;
+}
+#settings-panel[hidden] {
+  display: none;
+}
+.settings-title {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--panel-muted);
+  margin-bottom: 10px;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.settings-row:last-child {
+  margin-bottom: 0;
+}
+.settings-label {
+  color: var(--panel-fg);
+}
+.settings-seg {
+  display: flex;
+  border: 1px solid var(--panel-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.settings-seg button {
+  background: transparent;
+  border: none;
+  color: var(--panel-muted);
+  padding: 4px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.settings-seg button.active {
+  background: var(--accent);
+  color: var(--accent-fg);
+}
+.settings-row input[type="checkbox"] {
+  accent-color: var(--accent);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
 }
 
 /* ---- toast ---- */
@@ -442,7 +573,7 @@ body,
 
 /* ---- toolbar danger button ---- */
 .toolbar button.danger:hover {
-  background: #b91c1c;
+  background: var(--danger);
   color: #fff;
 }
 
@@ -451,25 +582,25 @@ body,
   margin-left: 8px;
   padding: 4px 10px;
   border-radius: 6px;
-  border: 1px solid #334155;
-  background: #0f172a;
-  color: #e2e8f0;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--input-fg);
   font-size: 13px;
   width: 140px;
 }
 #search-input::placeholder {
-  color: #64748b;
+  color: var(--tb-muted);
 }
 
-/* ---- toolbar template select ---- */
+/* ---- toolbar template + board select ---- */
 #template-select,
 #board-select {
   margin-left: 6px;
   padding: 4px 6px;
   border-radius: 6px;
-  border: 1px solid #334155;
-  background: #0f172a;
-  color: #e2e8f0;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--input-fg);
   font-size: 13px;
   max-width: 180px;
 }

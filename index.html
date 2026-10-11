@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="icon" href="data:," />
+  <link rel="icon" href="/icon.png" />
   <title>OpenMirko — infinite whiteboard</title>
   <link rel="stylesheet" href="/src/style.css" />
 </head>
 <body>
   <div id="app">
     <div id="toolbar" class="toolbar" role="toolbar" aria-label="Tools">
-      <span class="brand">OpenMirko</span>
+      <span class="brand"><img src="/icon.png" class="brand-icon" alt="" />OpenMirko</span>
       <span class="sep"></span>
       <select id="board-select" aria-label="Boards" title="Switch board"></select>
       <button id="btn-rename" title="Rename current board">Rename</button>
@@ -54,6 +54,25 @@
         <option value="blank">Blank</option>
       </select>
       <span class="hint">Space+drag pan · wheel zoom · dbl-click edit · Del remove</span>
+      <button id="btn-settings" title="Settings" aria-label="Settings">&#9881;</button>
+      <div id="settings-panel" class="settings-panel" hidden>
+        <div class="settings-title">Settings</div>
+        <div class="settings-row">
+          <span class="settings-label">Theme</span>
+          <div class="settings-seg" role="group" aria-label="Theme">
+            <button data-theme="dark" class="active">Dark</button>
+            <button data-theme="light">Light</button>
+          </div>
+        </div>
+        <label class="settings-row">
+          <span class="settings-label">Show grid</span>
+          <input type="checkbox" id="set-grid" />
+        </label>
+        <label class="settings-row">
+          <span class="settings-label">Snap to grid</span>
+          <input type="checkbox" id="set-snap" />
+        </label>
+      </div>
     </div>
 
     <div id="viewport" data-tool="select">

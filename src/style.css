@@ -1,0 +1,224 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- toolbar ---- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: #1e293b;
+  color: #e2e8f0;
+  border-bottom: 1px solid #0f172a;
+  flex: none;
+  user-select: none;
+}
+
+.toolbar .brand {
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  margin-right: 4px;
+}
+
+.toolbar .sep {
+  width: 1px;
+  height: 20px;
+  background: #334155;
+  margin: 0 4px;
+}
+
+.toolbar button {
+  background: transparent;
+  border: 1px solid transparent;
+  color: #cbd5e1;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.toolbar button:hover {
+  background: #334155;
+  color: #fff;
+}
+
+.toolbar button.active {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.toolbar .hint {
+  margin-left: auto;
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* ---- viewport ---- */
+#viewport {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background-color: #f8fafc;
+  background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+  cursor: default;
+  touch-action: none;
+}
+
+#viewport.panning {
+  cursor: grabbing;
+}
+
+#viewport[data-tool="sticky"],
+#viewport[data-tool="rect"],
+#viewport[data-tool="ellipse"],
+#viewport[data-tool="text"] {
+  cursor: crosshair;
+}
+
+#viewport[data-tool="connector"] {
+  cursor: pointer;
+}
+
+/* ---- canvas (world-space, transformed) ---- */
+#canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+/* ---- shapes ---- */
+.shape {
+  position: absolute;
+  transform-origin: 0 0;
+  user-select: none;
+}
+
+.shape .shape-body {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  white-space: pre-wrap;
+  overflow: hidden;
+  word-break: break-word;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #0f172a;
+}
+
+.shape-sticky .shape-body {
+  background: var(--shape-color, #fde68a);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+}
+
+.shape-rect .shape-body {
+  background: var(--shape-color, #ffffff);
+  border: 2px solid #475569;
+  border-radius: 4px;
+}
+
+.shape-ellipse .shape-body {
+  background: var(--shape-color, #dbeafe);
+  border: 2px solid #3b82f6;
+  border-radius: 50%;
+}
+
+.shape-text .shape-body {
+  background: transparent;
+  padding: 4px;
+  font-size: 20px;
+}
+
+.shape.selected .shape-body {
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
+}
+
+/* ---- connector layer ---- */
+#connectors {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+#connectors g.connector {
+  pointer-events: stroke;
+}
+
+#connectors g.connector line {
+  stroke: #64748b;
+  stroke-width: 2.5;
+}
+
+#connectors g.connector.selected line {
+  stroke: #3b82f6;
+  stroke-width: 3.5;
+}
+
+#connectors g.connector.selected polygon {
+  fill: #3b82f6;
+}
+
+/* ---- resize handles ---- */
+#handles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  background: #fff;
+  border: 2px solid #3b82f6;
+  border-radius: 2px;
+  pointer-events: all;
+  cursor: nwse-resize;
+}
+
+/* ---- marquee ---- */
+#marquee {
+  position: absolute;
+  display: none;
+  border: 1px solid #3b82f6;
+  background: rgba(59, 130, 246, 0.08);
+  pointer-events: none;
+}
+
+/* ---- text editor overlay ---- */
+.text-editor {
+  position: absolute;
+  z-index: 10;
+  padding: 10px;
+  font: inherit;
+  font-size: 15px;
+  color: #0f172a;
+  background: #fff;
+  border: 2px solid #3b82f6;
+  border-radius: 4px;
+  outline: none;
+  resize: both;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="data:," />
+  <title>OpenMirko — infinite whiteboard</title>
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <div id="app">
+    <div id="toolbar" class="toolbar">
+      <span class="brand">OpenMirko</span>
+      <span class="sep"></span>
+      <button data-tool="select" title="Select (V)">Select</button>
+      <button data-tool="sticky" title="Sticky note (S)">Sticky</button>
+      <button data-tool="rect" title="Rectangle (R)">Rect</button>
+      <button data-tool="ellipse" title="Ellipse (O)">Ellipse</button>
+      <button data-tool="text" title="Text (T)">Text</button>
+      <button data-tool="connector" title="Arrow (C)">Arrow</button>
+      <span class="sep"></span>
+      <button id="btn-undo" title="Undo (Ctrl+Z)">Undo</button>
+      <button id="btn-redo" title="Redo (Ctrl+Y)">Redo</button>
+      <span class="sep"></span>
+      <button id="btn-zoom-out" title="Zoom out (-)">-</button>
+      <button id="btn-zoom-in" title="Zoom in (+)">+</button>
+      <button id="btn-reset" title="Reset view (0)">100%</button>
+      <span class="sep"></span>
+      <button id="btn-export" title="Download board as JSON">Export</button>
+      <button id="btn-import" title="Load a board JSON file">Import</button>
+      <input type="file" id="file-input" accept="application/json,.json" hidden />
+      <span class="hint">Space+drag pan · wheel zoom · dbl-click edit · Del remove</span>
+    </div>
+
+    <div id="viewport" data-tool="select">
+      <div id="canvas"></div>
+      <svg id="connectors"></svg>
+      <div id="handles"></div>
+      <div id="marquee"></div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>

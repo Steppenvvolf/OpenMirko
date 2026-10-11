@@ -5,6 +5,7 @@ import { History } from './history'
 import { alignShapes, distributeShapes, snapTo } from './layout'
 import type { AlignAxis } from './layout'
 import { penBounds, scalePoints, translatePoints } from './pen'
+import { mindMapLayout } from './mindmap'
 import { Renderer } from './render'
 import * as persist from './persist'
 import type { BoardState, Connector, Shape, ShapeType, Tool } from './types'
@@ -211,6 +212,41 @@ export class Editor {
       if (s) {
         s.x = m.x
         s.y = m.y
+      }
+    }
+    this.commit()
+  }
+
+  /** Auto-arrange the board (or selected subgraph) as a horizontal mind map. */
+  mindMap(): void {
+    const shapes = this.board.state.shapes
+    if (shapes.length === 0) return
+    let rootId: string
+    const selected = this.selectedShapes()
+    if (selected.length > 0) {
+      rootId = selected[0].id
+    } else {
+      const incoming = new Set(this.board.state.connectors.map((c) => c.toId))
+      rootId = (shapes.find((s) => !incoming.has(s.id)) ?? shapes[0]).id
+    }
+    const positions = mindMapLayout(shapes, this.board.state.connectors, rootId)
+    if (!positions.length) return
+    this.history.push(this.board.clone())
+    for (const p of positions) {
+      const s = this.board.shape(p.id)
+      if (!s) continue
+      if (s.points) {
+        const dx = p.x - s.x
+        const dy = p.y - s.y
+        s.points = translatePoints(s.points, dx, dy)
+        const b = penBounds(s.points)
+        s.x = b.x
+        s.y = b.y
+        s.w = b.w
+        s.h = b.h
+      } else {
+        s.x = p.x
+        s.y = p.y
       }
     }
     this.commit()

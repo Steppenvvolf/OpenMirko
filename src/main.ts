@@ -68,6 +68,10 @@ btn('btn-new').addEventListener('click', () => {
     editor.clearBoard()
   }
 })
+btn('btn-mindmap').addEventListener('click', () => {
+  editor.mindMap()
+  toast('Arranged as mind map')
+})
 
 // context bar: colors
 document.querySelectorAll<HTMLElement>('.swatch').forEach((s) => {

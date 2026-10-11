@@ -28,6 +28,8 @@ export interface Shape {
   points?: { x: number; y: number }[]
   /** Pen stroke width in world units. */
   strokeWidth?: number
+  /** Font size in px (shapes with text). */
+  fontSize?: number
 }
 
 export interface Connector {
@@ -49,6 +51,7 @@ export interface ShapeDefaults {
   h: number
   color: string
   label: string
+  fontSize?: number
 }
 
 export const SHAPE_DEFAULTS: Record<ShapeType, ShapeDefaults> = {
@@ -61,13 +64,14 @@ export const SHAPE_DEFAULTS: Record<ShapeType, ShapeDefaults> = {
   star: { w: 180, h: 180, color: '#FEF08A', label: 'Star' },
   cloud: { w: 200, h: 120, color: '#E0F2FE', label: 'Cloud' },
   pen: { w: 100, h: 100, color: '#1E293B', label: 'Pen' },
-  frame: { w: 800, h: 500, color: '#FFFFFF', label: 'Frame' },
-  text: { w: 180, h: 48, color: 'transparent', label: 'Text' },
+  frame: { w: 800, h: 500, color: '#FFFFFF', label: 'Frame', fontSize: 14 },
+  text: { w: 180, h: 48, color: 'transparent', label: 'Text', fontSize: 20 },
 }
 
 export const CONNECTOR_COLOR = '#64748B'
 export const MIN_SIZE = 24
 export const GRID = 28
+export const DEFAULT_FONT_SIZE = 15
 
 export function uid(prefix: string): string {
   return `${prefix}-${crypto.randomUUID().slice(0, 8)}`

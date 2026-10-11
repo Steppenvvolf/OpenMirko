@@ -78,6 +78,13 @@ document.querySelectorAll<HTMLElement>('[data-distribute]').forEach((b) => {
 // context bar: snap toggle
 btn('cb-snap').addEventListener('click', () => editor.setSnap(!editor.snapEnabled))
 
+// context bar: font size + z-order
+btn('cb-font-down').addEventListener('click', () => editor.setFontSize(-2))
+btn('cb-font-up').addEventListener('click', () => editor.setFontSize(2))
+document.querySelectorAll<HTMLElement>('[data-z]').forEach((b) => {
+  b.addEventListener('click', () => (b.dataset.z === 'front' ? editor.bringFront() : editor.sendBack()))
+})
+
 editor.setTool('select')
 
 let toastTimer: number | undefined

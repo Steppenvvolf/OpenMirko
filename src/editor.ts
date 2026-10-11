@@ -8,7 +8,7 @@ import { penBounds, scalePoints, translatePoints } from './pen'
 import { Renderer } from './render'
 import * as persist from './persist'
 import type { BoardState, Connector, Shape, ShapeType, Tool } from './types'
-import { GRID, MIN_SIZE } from './types'
+import { DEFAULT_FONT_SIZE, GRID, MIN_SIZE } from './types'
 import { Viewport } from './viewport'
 
 type DragMode = 'pan' | 'move' | 'resize' | 'marquee' | 'draw'
@@ -223,6 +223,48 @@ export class Editor {
     if (!shapes.length) return
     this.history.push(this.board.clone())
     for (const s of shapes) s.color = color
+    this.commit()
+  }
+
+  setFontSize(delta: number): void {
+    const shapes = this.selectedShapes()
+    if (!shapes.length) return
+    this.history.push(this.board.clone())
+    for (const s of shapes) s.fontSize = Math.max(8, Math.min(96, (s.fontSize ?? DEFAULT_FONT_SIZE) + delta))
+    this.commit()
+  }
+
+  bringFront(): void {
+    if (this.selection.size === 0) return
+    this.history.push(this.board.clone())
+    this.board.reorderMany(this.selection, 'front')
+    this.commit()
+  }
+
+  sendBack(): void {
+    if (this.selection.size === 0) return
+    this.history.push(this.board.clone())
+    this.board.reorderMany(this.selection, 'back')
+    this.commit()
+  }
+
+  private nudge(dx: number, dy: number): void {
+    const shapes = this.selectedShapes()
+    if (!shapes.length) return
+    this.history.push(this.board.clone())
+    for (const s of shapes) {
+      if (s.points) {
+        s.points = translatePoints(s.points, dx, dy)
+        const b = penBounds(s.points)
+        s.x = b.x
+        s.y = b.y
+        s.w = b.w
+        s.h = b.h
+      } else {
+        s.x += dx
+        s.y += dy
+      }
+    }
     this.commit()
   }
 
@@ -718,6 +760,16 @@ export class Editor {
     }
     if (lower === 'escape') {
       this.clearSelection()
+      return
+    }
+    if (lower === 'arrowup' || lower === 'arrowdown' || lower === 'arrowleft' || lower === 'arrowright') {
+      if (this.selection.size > 0) {
+        e.preventDefault()
+        const step = e.shiftKey ? 10 : 1
+        const dx = lower === 'arrowleft' ? -step : lower === 'arrowright' ? step : 0
+        const dy = lower === 'arrowup' ? -step : lower === 'arrowdown' ? step : 0
+        this.nudge(dx, dy)
+      }
       return
     }
     if (TOOL_KEYS[lower]) {

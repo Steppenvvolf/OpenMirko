@@ -1,7 +1,7 @@
 // The board document model: shapes, connectors, and geometry helpers.
 
 import type { BoardState, Connector, Shape, ShapeType } from './types'
-import { CONNECTOR_COLOR, SHAPE_DEFAULTS, uid } from './types'
+import { CONNECTOR_COLOR, DEFAULT_FONT_SIZE, SHAPE_DEFAULTS, uid } from './types'
 
 export class Board {
   state: BoardState
@@ -49,6 +49,7 @@ export class Board {
       h: d.h,
       text: type === 'frame' ? 'Frame' : '',
       color: d.color,
+      fontSize: d.fontSize ?? DEFAULT_FONT_SIZE,
     }
     this.state.shapes.push(shape)
     return shape
@@ -77,6 +78,14 @@ export class Board {
 
   removeMany(ids: Set<string>): void {
     for (const id of ids) this.remove(id)
+  }
+
+  /** Move the given shapes to the front (top) or back (bottom) of the z-order,
+   *  preserving their relative order. */
+  reorderMany(ids: Set<string>, dir: 'front' | 'back'): void {
+    const selected = this.state.shapes.filter((s) => ids.has(s.id))
+    const rest = this.state.shapes.filter((s) => !ids.has(s.id))
+    this.state.shapes = dir === 'front' ? [...rest, ...selected] : [...selected, ...rest]
   }
 
   replace(state: BoardState): void {

@@ -16,7 +16,7 @@
 - [x] Shape library: diamond, triangle, hexagon, star, cloud
 - [x] Frames (group containers; move-containment works, no clipping yet)
 - [ ] Mind-map auto-layout (sticky + connectors)
-- [x] Colors per object (borders / font sizing still TODO)
+- [x] Colors + font sizing per object (borders still TODO)
 - [x] Copy / paste / duplicate / align / distribute
 - [x] Grid + snap (ruler still TODO)
 

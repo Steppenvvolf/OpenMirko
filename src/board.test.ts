@@ -167,3 +167,27 @@ describe('Board.shapesInside', () => {
     expect(inside.has('f')).toBe(false)
   })
 })
+
+describe('Board.reorderMany', () => {
+  const mk = () => {
+    const b = makeBoard()
+    b.state.shapes.push(
+      { id: 'a', type: 'rect', x: 0, y: 0, w: 10, h: 10, text: '', color: '#fff' },
+      { id: 'b', type: 'rect', x: 0, y: 0, w: 10, h: 10, text: '', color: '#fff' },
+      { id: 'c', type: 'rect', x: 0, y: 0, w: 10, h: 10, text: '', color: '#fff' },
+    )
+    return b
+  }
+
+  it('moves selected shapes to the front, preserving relative order', () => {
+    const b = mk()
+    b.reorderMany(new Set(['a', 'c']), 'front')
+    expect(b.state.shapes.map((s) => s.id)).toEqual(['b', 'a', 'c'])
+  })
+
+  it('moves selected shapes to the back, preserving relative order', () => {
+    const b = mk()
+    b.reorderMany(new Set(['b', 'c']), 'back')
+    expect(b.state.shapes.map((s) => s.id)).toEqual(['b', 'c', 'a'])
+  })
+})

@@ -3,6 +3,7 @@
 
 import type { Board } from './board'
 import type { Connector, Shape } from './types'
+import { DEFAULT_FONT_SIZE } from './types'
 import type { Viewport } from './viewport'
 
 const NS = 'http://www.w3.org/2000/svg'
@@ -51,9 +52,10 @@ export class Renderer {
       el.className = `shape shape-${s.type}`
       el.dataset.id = s.id
       el.innerHTML = s.type === 'pen' ? `<svg class="pen-svg"><path class="pen-path"></path></svg>` : `<div class="shape-body"></div>`
-      this.canvas.appendChild(el)
       this.shapeEls.set(s.id, el)
     }
+    // (Re)append in array order so the DOM stacking follows the board's order.
+    this.canvas.appendChild(el)
     return el
   }
 
@@ -67,6 +69,7 @@ export class Renderer {
     } else {
       const body = el.firstElementChild as HTMLElement
       body.textContent = s.text || ''
+      body.style.fontSize = `${s.fontSize ?? DEFAULT_FONT_SIZE}px`
     }
   }
 

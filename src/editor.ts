@@ -68,6 +68,7 @@ export class Editor {
   private clipboard: { shapes: Shape[]; connectors: Connector[] } | null = null
   snapEnabled = false
   searchMatches = new Set<string>()
+  boardId = ''
 
   constructor(
     private viewportEl: HTMLElement,
@@ -96,7 +97,7 @@ export class Editor {
 
   private commit(): void {
     this.refresh()
-    persist.save(this.board.clone())
+    persist.saveBoard(this.boardId, this.board.clone())
   }
 
   private syncGrid(): void {

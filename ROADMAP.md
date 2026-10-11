@@ -29,7 +29,7 @@
 
 ## v0.4 — boards at scale
 
-- [ ] Multiple boards + folders (local first)
+- [x] Multiple boards (local first; folders still TODO)
 - [ ] Comments / mentions
 - [x] Templates (blank, mind map, flowchart, kanban)
 - [x] Export PNG + SVG + PDF

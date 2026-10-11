@@ -11,14 +11,9 @@ const svg = document.getElementById('connectors') as unknown as SVGSVGElement
 const handles = document.getElementById('handles')!
 const marquee = document.getElementById('marquee')!
 
-const editor = new Editor(
-  viewport,
-  canvas,
-  svg,
-  handles,
-  marquee,
-  persist.load() ?? persist.emptyBoard(),
-)
+const initial = persist.loadInitial()
+const editor = new Editor(viewport, canvas, svg, handles, marquee, initial.state)
+editor.boardId = initial.id
 
 // toolbar: tool buttons
 document.querySelectorAll<HTMLElement>('.toolbar [data-tool]').forEach((btn) => {
@@ -66,8 +61,42 @@ btn('file-input').addEventListener('change', async (e) => {
   }
 })
 btn('btn-new').addEventListener('click', () => {
-  if (confirm('Start a new board? The current board will be cleared. Export first to keep it.')) {
-    editor.clearBoard()
+  const name = prompt('Board name:', 'Untitled')
+  if (name === null) return
+  const { id, state } = persist.createBoard(name)
+  editor.boardId = id
+  editor.loadState(state)
+  refreshBoards()
+  toast('Created new board')
+})
+btn('btn-rename').addEventListener('click', () => {
+  const cur = persist.listBoards().find((b) => b.id === editor.boardId)
+  const name = prompt('Board name:', cur?.name ?? 'Untitled')
+  if (name === null) return
+  persist.renameBoard(editor.boardId, name)
+  refreshBoards()
+})
+
+// board switcher
+const boardSelect = document.getElementById('board-select') as HTMLSelectElement
+function refreshBoards(): void {
+  boardSelect.innerHTML = ''
+  for (const b of persist.listBoards()) {
+    const opt = document.createElement('option')
+    opt.value = b.id
+    opt.textContent = b.name
+    boardSelect.appendChild(opt)
+  }
+  boardSelect.value = editor.boardId
+}
+refreshBoards()
+boardSelect.addEventListener('change', () => {
+  const id = boardSelect.value
+  const state = persist.loadBoard(id)
+  if (state) {
+    editor.boardId = id
+    persist.setActiveId(id)
+    editor.loadState(state)
   }
 })
 btn('btn-mindmap').addEventListener('click', () => {

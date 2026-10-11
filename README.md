@@ -37,6 +37,11 @@ npm run desktop       # opens a native window with hot reload
 npm run desktop:build # builds a native installer
 ```
 
+A prebuilt Windows .exe can be produced with `build-windows.bat` (needs
+Visual Studio Build Tools + the Rust msvc toolchain). It writes
+`src-tauri/target/release/openmirko.exe`, a self-contained ~8 MB binary you
+double-click to run.
+
 Build a static bundle:
 
 ```bash

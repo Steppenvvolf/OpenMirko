@@ -2,6 +2,7 @@ node_modules/
 dist/
 src-tauri/target/
 src-tauri/gen/
+OpenMirko.exe
 .DS_Store
 *.log
 .idea/

@@ -1,6 +1,15 @@
 // Shared types and constants for OpenMirko.
 
-export type ShapeType = 'sticky' | 'rect' | 'ellipse' | 'text'
+export type ShapeType =
+  | 'sticky'
+  | 'rect'
+  | 'ellipse'
+  | 'diamond'
+  | 'triangle'
+  | 'hexagon'
+  | 'star'
+  | 'cloud'
+  | 'text'
 export type ConnectorKind = 'arrow' | 'line'
 export type Tool = 'select' | ShapeType | 'connector'
 
@@ -40,11 +49,17 @@ export const SHAPE_DEFAULTS: Record<ShapeType, ShapeDefaults> = {
   sticky: { w: 200, h: 200, color: '#FDE68A', label: 'Sticky note' },
   rect: { w: 180, h: 110, color: '#FFFFFF', label: 'Rectangle' },
   ellipse: { w: 180, h: 110, color: '#DBEAFE', label: 'Ellipse' },
+  diamond: { w: 180, h: 180, color: '#FBCFE8', label: 'Diamond' },
+  triangle: { w: 180, h: 160, color: '#FDE68A', label: 'Triangle' },
+  hexagon: { w: 180, h: 156, color: '#D1FAE5', label: 'Hexagon' },
+  star: { w: 180, h: 180, color: '#FEF08A', label: 'Star' },
+  cloud: { w: 200, h: 120, color: '#E0F2FE', label: 'Cloud' },
   text: { w: 180, h: 48, color: 'transparent', label: 'Text' },
 }
 
 export const CONNECTOR_COLOR = '#64748B'
 export const MIN_SIZE = 24
+export const GRID = 28
 
 export function uid(prefix: string): string {
   return `${prefix}-${crypto.randomUUID().slice(0, 8)}`

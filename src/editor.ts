@@ -2,10 +2,12 @@
 
 import { Board } from './board'
 import { History } from './history'
+import { alignShapes, distributeShapes, snapTo } from './layout'
+import type { AlignAxis } from './layout'
 import { Renderer } from './render'
 import * as persist from './persist'
-import type { BoardState, Shape, ShapeType, Tool } from './types'
-import { MIN_SIZE, uid } from './types'
+import type { BoardState, Connector, Shape, ShapeType, Tool } from './types'
+import { GRID, MIN_SIZE } from './types'
 import { Viewport } from './viewport'
 
 type DragMode = 'pan' | 'move' | 'resize' | 'marquee'
@@ -29,6 +31,11 @@ const TOOL_KEYS: Record<string, Tool> = {
   s: 'sticky',
   r: 'rect',
   o: 'ellipse',
+  d: 'diamond',
+  y: 'triangle',
+  h: 'hexagon',
+  a: 'star',
+  l: 'cloud',
   t: 'text',
   c: 'connector',
 }
@@ -44,6 +51,8 @@ export class Editor {
   private spaceHeld = false
   private connectorSource: string | null = null
   private drag: DragState | null = null
+  private clipboard: { shapes: Shape[]; connectors: Connector[] } | null = null
+  snapEnabled = false
 
   constructor(
     private viewportEl: HTMLElement,
@@ -67,6 +76,7 @@ export class Editor {
     this.renderer.renderAll()
     this.updateHandles()
     this.syncGrid()
+    this.updateContextBar()
   }
 
   private commit(): void {
@@ -124,6 +134,115 @@ export class Editor {
     this.refresh()
   }
 
+  // ---- selection helpers ---------------------------------------------------
+
+  private selectedShapes(): Shape[] {
+    const shapes: Shape[] = []
+    for (const id of this.selection) {
+      const s = this.board.shape(id)
+      if (s) shapes.push(s)
+    }
+    return shapes
+  }
+
+  selectAll(): void {
+    this.selection = new Set([
+      ...this.board.state.shapes.map((s) => s.id),
+      ...this.board.state.connectors.map((c) => c.id),
+    ])
+    this.refresh()
+  }
+
+  // ---- clipboard -----------------------------------------------------------
+
+  copySelected(): void {
+    if (this.selection.size === 0) return
+    this.clipboard = this.board.copySelection(this.selection)
+  }
+
+  cutSelected(): void {
+    if (this.selection.size === 0) return
+    this.copySelected()
+    this.deleteSelected()
+  }
+
+  paste(): void {
+    if (!this.clipboard) return
+    this.history.push(this.board.clone())
+    const { shapeIds } = this.board.pasteSubgraph(this.clipboard, 24, 24)
+    this.selection = new Set(shapeIds)
+    this.commit()
+  }
+
+  // ---- layout (align / distribute) -----------------------------------------
+
+  align(axis: AlignAxis): void {
+    const moves = alignShapes(this.selectedShapes(), axis)
+    if (!moves.length) return
+    this.history.push(this.board.clone())
+    for (const m of moves) {
+      const s = this.board.shape(m.id)
+      if (s) {
+        s.x = m.x
+        s.y = m.y
+      }
+    }
+    this.commit()
+  }
+
+  distribute(axis: 'x' | 'y'): void {
+    const moves = distributeShapes(this.selectedShapes(), axis)
+    if (!moves.length) return
+    this.history.push(this.board.clone())
+    for (const m of moves) {
+      const s = this.board.shape(m.id)
+      if (s) {
+        s.x = m.x
+        s.y = m.y
+      }
+    }
+    this.commit()
+  }
+
+  // ---- appearance ----------------------------------------------------------
+
+  setColor(color: string): void {
+    const shapes = this.selectedShapes()
+    if (!shapes.length) return
+    this.history.push(this.board.clone())
+    for (const s of shapes) s.color = color
+    this.commit()
+  }
+
+  setSnap(enabled: boolean): void {
+    this.snapEnabled = enabled
+    this.updateContextBar()
+  }
+
+  // ---- board lifecycle -----------------------------------------------------
+
+  clearBoard(): void {
+    this.board.replace(persist.emptyBoard())
+    this.selection.clear()
+    this.clipboard = null
+    this.connectorSource = null
+    this.history.reset(this.board.clone())
+    this.commit()
+  }
+
+  // ---- contextual toolbar --------------------------------------------------
+
+  private updateContextBar(): void {
+    const bar = document.getElementById('contextbar')
+    if (!bar) return
+    const shapes = this.selectedShapes()
+    bar.hidden = shapes.length === 0
+    const arrange = bar.querySelector('.cb-arrange') as HTMLElement | null
+    if (arrange) arrange.style.display = shapes.length >= 2 ? '' : 'none'
+    const snapBtn = bar.querySelector('#cb-snap') as HTMLElement | null
+    snapBtn?.classList.toggle('active', this.snapEnabled)
+  }
+
   // ---- mutations (with history) -------------------------------------------
 
   private deleteSelected(): void {
@@ -137,16 +256,9 @@ export class Editor {
   private duplicateSelected(): void {
     if (this.selection.size === 0) return
     this.history.push(this.board.clone())
-    const newSel = new Set<string>()
-    const offset = 24
-    for (const id of this.selection) {
-      const s = this.board.shape(id)
-      if (!s) continue
-      const copy: Shape = { ...s, id: uid('s'), x: s.x + offset, y: s.y + offset }
-      this.board.state.shapes.push(copy)
-      newSel.add(copy.id)
-    }
-    this.selection = newSel
+    const sub = this.board.copySelection(this.selection)
+    const { shapeIds } = this.board.pasteSubgraph(sub, 24, 24)
+    this.selection = new Set(shapeIds)
     this.commit()
   }
 
@@ -169,7 +281,8 @@ export class Editor {
   loadState(state: BoardState): void {
     this.board.replace(state)
     this.selection.clear()
-    this.history.push(state) // new baseline
+    // Reset (not just push) so undo cannot cross the import boundary.
+    this.history.reset(state)
     this.commit()
   }
 
@@ -316,6 +429,10 @@ export class Editor {
           if (s) {
             s.x = o.x + dw
             s.y = o.y + dh
+            if (this.snapEnabled) {
+              s.x = snapTo(s.x, GRID)
+              s.y = snapTo(s.y, GRID)
+            }
           }
         }
         this.refresh()
@@ -488,6 +605,26 @@ export class Editor {
     if (mod && e.key.toLowerCase() === 'd') {
       e.preventDefault()
       this.duplicateSelected()
+      return
+    }
+    if (mod && e.key.toLowerCase() === 'a') {
+      e.preventDefault()
+      this.selectAll()
+      return
+    }
+    if (mod && e.key.toLowerCase() === 'c') {
+      e.preventDefault()
+      this.copySelected()
+      return
+    }
+    if (mod && e.key.toLowerCase() === 'x') {
+      e.preventDefault()
+      this.cutSelected()
+      return
+    }
+    if (mod && e.key.toLowerCase() === 'v') {
+      e.preventDefault()
+      this.paste()
       return
     }
 

@@ -52,9 +52,10 @@ export class Board {
 
   remove(id: string): void {
     this.state.shapes = this.state.shapes.filter((s) => s.id !== id)
-    // connectors referencing a removed shape are dropped too
+    // Drop connectors that reference a removed shape, and allow removing a
+    // connector directly by its own id (selected connector + Delete).
     this.state.connectors = this.state.connectors.filter(
-      (c) => c.fromId !== id && c.toId !== id,
+      (c) => c.id !== id && c.fromId !== id && c.toId !== id,
     )
   }
 
@@ -68,6 +69,60 @@ export class Board {
 
   clone(): BoardState {
     return JSON.parse(JSON.stringify(this.state)) as BoardState
+  }
+
+  // ---- copy / paste (detached subgraph) -----------------------------------
+
+  /**
+   * Detached copy of the given shapes and the connectors linking them, with
+   * fresh ids. Connectors whose endpoint is outside the selection are dropped.
+   */
+  copySelection(ids: Set<string>): { shapes: Shape[]; connectors: Connector[] } {
+    const idMap = new Map<string, string>()
+    const shapes: Shape[] = []
+    for (const s of this.state.shapes) {
+      if (!ids.has(s.id)) continue
+      const nid = uid('s')
+      idMap.set(s.id, nid)
+      shapes.push({ ...s, id: nid })
+    }
+    const connectors: Connector[] = []
+    for (const c of this.state.connectors) {
+      const f = idMap.get(c.fromId)
+      const t = idMap.get(c.toId)
+      if (!f || !t) continue
+      connectors.push({ ...c, id: uid('c'), fromId: f, toId: t })
+    }
+    return { shapes, connectors }
+  }
+
+  /**
+   * Insert a detached subgraph (from copySelection) into the board with fresh
+   * ids and an (x, y) offset. Returns the ids of the inserted items.
+   */
+  pasteSubgraph(
+    sub: { shapes: Shape[]; connectors: Connector[] },
+    dx: number,
+    dy: number,
+  ): { shapeIds: string[]; connectorIds: string[] } {
+    const idMap = new Map<string, string>()
+    const shapeIds: string[] = []
+    for (const s of sub.shapes) {
+      const nid = uid('s')
+      idMap.set(s.id, nid)
+      shapeIds.push(nid)
+      this.state.shapes.push({ ...s, id: nid, x: s.x + dx, y: s.y + dy })
+    }
+    const connectorIds: string[] = []
+    for (const c of sub.connectors) {
+      const f = idMap.get(c.fromId)
+      const t = idMap.get(c.toId)
+      if (!f || !t) continue
+      const nid = uid('c')
+      connectorIds.push(nid)
+      this.state.connectors.push({ ...c, id: nid, fromId: f, toId: t })
+    }
+    return { shapeIds, connectorIds }
   }
 
   // ---- geometry -----------------------------------------------------------

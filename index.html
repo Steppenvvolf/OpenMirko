@@ -9,26 +9,32 @@
 </head>
 <body>
   <div id="app">
-    <div id="toolbar" class="toolbar">
+    <div id="toolbar" class="toolbar" role="toolbar" aria-label="Tools">
       <span class="brand">OpenMirko</span>
       <span class="sep"></span>
-      <button data-tool="select" title="Select (V)">Select</button>
-      <button data-tool="sticky" title="Sticky note (S)">Sticky</button>
-      <button data-tool="rect" title="Rectangle (R)">Rect</button>
-      <button data-tool="ellipse" title="Ellipse (O)">Ellipse</button>
-      <button data-tool="text" title="Text (T)">Text</button>
-      <button data-tool="connector" title="Arrow (C)">Arrow</button>
+      <button data-tool="select" title="Select (V)" aria-label="Select tool">Select</button>
+      <button data-tool="sticky" title="Sticky note (S)" aria-label="Sticky note">Sticky</button>
+      <button data-tool="rect" title="Rectangle (R)" aria-label="Rectangle">Rect</button>
+      <button data-tool="ellipse" title="Ellipse (O)" aria-label="Ellipse">Ellipse</button>
+      <button data-tool="diamond" title="Diamond (D)" aria-label="Diamond">Diamond</button>
+      <button data-tool="triangle" title="Triangle (Y)" aria-label="Triangle">Triangle</button>
+      <button data-tool="hexagon" title="Hexagon (H)" aria-label="Hexagon">Hexagon</button>
+      <button data-tool="star" title="Star (A)" aria-label="Star">Star</button>
+      <button data-tool="cloud" title="Cloud (L)" aria-label="Cloud">Cloud</button>
+      <button data-tool="text" title="Text (T)" aria-label="Text">Text</button>
+      <button data-tool="connector" title="Arrow (C)" aria-label="Connector">Arrow</button>
       <span class="sep"></span>
-      <button id="btn-undo" title="Undo (Ctrl+Z)">Undo</button>
-      <button id="btn-redo" title="Redo (Ctrl+Y)">Redo</button>
+      <button id="btn-undo" title="Undo (Ctrl+Z)" aria-label="Undo">Undo</button>
+      <button id="btn-redo" title="Redo (Ctrl+Y)" aria-label="Redo">Redo</button>
       <span class="sep"></span>
-      <button id="btn-zoom-out" title="Zoom out (-)">-</button>
-      <button id="btn-zoom-in" title="Zoom in (+)">+</button>
-      <button id="btn-reset" title="Reset view (0)">100%</button>
+      <button id="btn-zoom-out" title="Zoom out (-)" aria-label="Zoom out">-</button>
+      <button id="btn-zoom-in" title="Zoom in (+)" aria-label="Zoom in">+</button>
+      <button id="btn-reset" title="Reset view (0)" aria-label="Reset zoom">100%</button>
       <span class="sep"></span>
       <button id="btn-export" title="Download board as JSON">Export</button>
       <button id="btn-import" title="Load a board JSON file">Import</button>
       <input type="file" id="file-input" accept="application/json,.json" hidden />
+      <button id="btn-new" title="Start a new board" class="danger">New</button>
       <span class="hint">Space+drag pan · wheel zoom · dbl-click edit · Del remove</span>
     </div>
 
@@ -37,6 +43,31 @@
       <svg id="connectors"></svg>
       <div id="handles"></div>
       <div id="marquee"></div>
+
+      <div id="contextbar" class="contextbar" hidden>
+        <div class="cb-colors">
+          <button class="swatch" style="background:#FDE68A" data-color="#FDE68A" title="Yellow" aria-label="Yellow"></button>
+          <button class="swatch" style="background:#FCA5A5" data-color="#FCA5A5" title="Red" aria-label="Red"></button>
+          <button class="swatch" style="background:#BFDBFE" data-color="#BFDBFE" title="Blue" aria-label="Blue"></button>
+          <button class="swatch" style="background:#A7F3D0" data-color="#A7F3D0" title="Green" aria-label="Green"></button>
+          <button class="swatch" style="background:#FBCFE8" data-color="#FBCFE8" title="Pink" aria-label="Pink"></button>
+          <button class="swatch" style="background:#E2E8F0" data-color="#E2E8F0" title="Gray" aria-label="Gray"></button>
+          <input type="color" id="color-custom" value="#FDE68A" title="Custom color" aria-label="Custom color" />
+        </div>
+        <span class="cb-sep"></span>
+        <div class="cb-arrange">
+          <button data-align="left" title="Align left" aria-label="Align left">L</button>
+          <button data-align="center-x" title="Align horizontal center" aria-label="Align horizontal center">Cx</button>
+          <button data-align="right" title="Align right" aria-label="Align right">R</button>
+          <button data-align="top" title="Align top" aria-label="Align top">T</button>
+          <button data-align="center-y" title="Align vertical center" aria-label="Align vertical center">Cy</button>
+          <button data-align="bottom" title="Align bottom" aria-label="Align bottom">B</button>
+          <button data-distribute="x" title="Distribute horizontally" aria-label="Distribute horizontally">&#8596;</button>
+          <button data-distribute="y" title="Distribute vertically" aria-label="Distribute vertically">&#8597;</button>
+        </div>
+        <span class="cb-sep"></span>
+        <button id="cb-snap" class="toggle" title="Snap to grid" aria-label="Snap to grid">Snap</button>
+      </div>
     </div>
   </div>
 

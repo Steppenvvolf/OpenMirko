@@ -13,12 +13,12 @@
 ## v0.2 — richer objects
 
 - [ ] Freehand pen
-- [ ] Shape library: diamond, triangle, hexagon, star, cloud
+- [x] Shape library: diamond, triangle, hexagon, star, cloud
 - [ ] Frames (group containers)
 - [ ] Mind-map auto-layout (sticky + connectors)
-- [ ] Colors, borders, font sizing per object
-- [ ] Copy / paste / duplicate / align / distribute
-- [ ] Grid + snap, ruler
+- [x] Colors per object (borders / font sizing still TODO)
+- [x] Copy / paste / duplicate / align / distribute
+- [x] Grid + snap (ruler still TODO)
 
 ## v0.3 — collaboration
 
@@ -37,7 +37,8 @@
 
 ## v0.5 — shipping
 
-- [ ] Tauri desktop shell (optional)
+- [x] Tauri desktop shell (dev + build scaffolded; native installer via `npm run desktop:build`)
+- [ ] Native file dialogs (Tauri dialog/fs plugins) for smoother desktop export/import
 - [ ] Plugin / extension system
 - [ ] Accessibility pass
 - [ ] i18n

@@ -13,16 +13,27 @@ import boards as plain JSON.
 
 ## Status
 
-Early. v0.1 is a working single-player canvas: pan, zoom, sticky notes,
-rectangles, ellipses, text, arrows/connectors, selection, resize,
-undo/redo, and JSON import/export. Multiplayer and a sync server are the
-next milestone (see ROADMAP.md).
+v0.2. A working single-player canvas: pan/zoom, nine shape types (sticky,
+rect, ellipse, diamond, triangle, hexagon, star, cloud, text), connectors,
+selection, resize, undo/redo, copy/paste/duplicate, align/distribute,
+snap-to-grid, per-shape colors, and JSON import/export. Ships as both a web
+app and a Tauri desktop app. Multiplayer and a sync server are the next
+milestone (see ROADMAP.md).
 
 ## Run it
+
+Web (browser):
 
 ```bash
 npm install
 npm run dev       # http://localhost:5173
+```
+
+Desktop app (Tauri; requires Rust and WebView2, preinstalled on Windows 10/11):
+
+```bash
+npm run desktop       # opens a native window with hot reload
+npm run desktop:build # builds a native installer
 ```
 
 Build a static bundle:
@@ -30,6 +41,13 @@ Build a static bundle:
 ```bash
 npm run build     # -> dist/
 npm run preview
+```
+
+Test and typecheck:
+
+```bash
+npm test
+npm run typecheck
 ```
 
 ## Why OpenMirko exists

@@ -222,3 +222,160 @@ body,
   resize: both;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
+
+/* ---- polygon / cloud shapes ---- */
+.shape-diamond .shape-body,
+.shape-triangle .shape-body,
+.shape-hexagon .shape-body,
+.shape-star .shape-body,
+.shape-cloud .shape-body {
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.shape-diamond .shape-body {
+  background: var(--shape-color, #fbcfe8);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
+}
+.shape-triangle .shape-body {
+  background: var(--shape-color, #fde68a);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.shape-hexagon .shape-body {
+  background: var(--shape-color, #d1fae5);
+  clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+}
+.shape-star .shape-body {
+  background: var(--shape-color, #fef08a);
+  clip-path: polygon(
+    50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%,
+    50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%
+  );
+}
+.shape-cloud .shape-body {
+  background: var(--shape-color, #e0f2fe);
+  border-radius: 40px;
+  position: relative;
+}
+.shape-cloud .shape-body::before,
+.shape-cloud .shape-body::after {
+  content: '';
+  position: absolute;
+  background: var(--shape-color, #e0f2fe);
+  border-radius: 50%;
+}
+.shape-cloud .shape-body::before {
+  width: 34px;
+  height: 34px;
+  top: -14px;
+  left: 22%;
+}
+.shape-cloud .shape-body::after {
+  width: 52px;
+  height: 52px;
+  top: -24px;
+  left: 46%;
+}
+
+/* ---- contextual bar (floating, shown when shapes are selected) ---- */
+.contextbar {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  z-index: 5;
+  user-select: none;
+}
+.contextbar[hidden] {
+  display: none;
+}
+.cb-colors {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.cb-arrange {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.contextbar button {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 3px 6px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #334155;
+  min-width: 22px;
+}
+.contextbar button:hover {
+  background: #f1f5f9;
+}
+.contextbar button.active {
+  background: #3b82f6;
+  color: #fff;
+}
+.swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1px solid #cbd5e1;
+  cursor: pointer;
+  padding: 0;
+}
+.swatch:hover {
+  outline: 2px solid #3b82f6;
+}
+#color-custom {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  cursor: pointer;
+  background: none;
+}
+.cb-sep {
+  width: 1px;
+  height: 18px;
+  background: #e2e8f0;
+  margin: 0 4px;
+}
+
+/* ---- toast ---- */
+.toast {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: #1e293b;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s, transform 0.2s;
+  z-index: 100;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ---- toolbar danger button ---- */
+.toolbar button.danger:hover {
+  background: #b91c1c;
+  color: #fff;
+}

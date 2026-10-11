@@ -27,6 +27,13 @@ export class History {
     return this.redoStack.length > 0
   }
 
+  /** Drop all history; optionally re-baseline with the given state. */
+  reset(state?: BoardState): void {
+    this.undoStack = []
+    this.redoStack = []
+    if (state) this.push(state)
+  }
+
   undo(current: BoardState): BoardState | null {
     if (!this.canUndo()) return null
     this.redoStack.push(JSON.stringify(current))

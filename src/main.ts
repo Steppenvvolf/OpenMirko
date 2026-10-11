@@ -1,6 +1,7 @@
 import { Editor } from './editor'
-import { downloadPNG, downloadSVG } from './export'
+import { downloadPNG, downloadSVG, printBoard } from './export'
 import * as persist from './persist'
+import { templates } from './templates'
 import type { AlignAxis } from './layout'
 import type { Tool } from './types'
 
@@ -49,6 +50,7 @@ btn('btn-export-png').addEventListener('click', async () => {
   await downloadPNG(editor.board.clone())
   toast('Board exported as PNG')
 })
+btn('btn-export-pdf').addEventListener('click', () => printBoard(editor.board.clone()))
 btn('btn-import').addEventListener('click', () => btn('file-input').click())
 btn('file-input').addEventListener('change', async (e) => {
   const input = e.target as HTMLInputElement
@@ -77,6 +79,21 @@ btn('btn-mindmap').addEventListener('click', () => {
 const searchInput = document.getElementById('search-input') as HTMLInputElement
 searchInput.addEventListener('input', () => editor.search(searchInput.value))
 
+// toolbar: templates
+const templateSelect = document.getElementById('template-select') as HTMLSelectElement
+templateSelect.addEventListener('change', () => {
+  const id = templateSelect.value
+  templateSelect.value = ''
+  if (!id) return
+  if (confirm('Load this template? The current board will be replaced.')) {
+    const t = templates.find((t) => t.id === id)
+    if (t) {
+      editor.loadState(t.build())
+      toast(`Loaded ${t.name} template`)
+    }
+  }
+})
+
 // context bar: colors
 document.querySelectorAll<HTMLElement>('.swatch').forEach((s) => {
   s.addEventListener('click', () => editor.setColor(s.dataset.color!))
@@ -98,6 +115,8 @@ btn('cb-snap').addEventListener('click', () => editor.setSnap(!editor.snapEnable
 // context bar: font size + z-order
 btn('cb-font-down').addEventListener('click', () => editor.setFontSize(-2))
 btn('cb-font-up').addEventListener('click', () => editor.setFontSize(2))
+btn('cb-border-down').addEventListener('click', () => editor.setBorderWidth(-1))
+btn('cb-border-up').addEventListener('click', () => editor.setBorderWidth(1))
 document.querySelectorAll<HTMLElement>('[data-z]').forEach((b) => {
   b.addEventListener('click', () => (b.dataset.z === 'front' ? editor.bringFront() : editor.sendBack()))
 })

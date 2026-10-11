@@ -36,11 +36,19 @@
       <button id="btn-export" title="Download board as JSON">Export</button>
       <button id="btn-export-svg" title="Download board as SVG">SVG</button>
       <button id="btn-export-png" title="Download board as PNG">PNG</button>
+      <button id="btn-export-pdf" title="Print board as PDF">PDF</button>
       <button id="btn-import" title="Load a board JSON file">Import</button>
       <input type="file" id="file-input" accept="application/json,.json" hidden />
       <button id="btn-new" title="Start a new board" class="danger">New</button>
       <button id="btn-mindmap" title="Auto-arrange as mind map">Mind map</button>
       <input type="text" id="search-input" placeholder="Search" aria-label="Search board" />
+      <select id="template-select" aria-label="Templates">
+        <option value="">Templates…</option>
+        <option value="mindmap">Mind map</option>
+        <option value="flowchart">Flowchart</option>
+        <option value="kanban">Kanban</option>
+        <option value="blank">Blank</option>
+      </select>
       <span class="hint">Space+drag pan · wheel zoom · dbl-click edit · Del remove</span>
     </div>
 
@@ -74,6 +82,8 @@
         <span class="cb-sep"></span>
         <button id="cb-font-down" title="Smaller text" aria-label="Smaller text">A-</button>
         <button id="cb-font-up" title="Larger text" aria-label="Larger text">A+</button>
+        <button id="cb-border-down" title="Thinner border" aria-label="Thinner border">B-</button>
+        <button id="cb-border-up" title="Thicker border" aria-label="Thicker border">B+</button>
         <span class="cb-sep"></span>
         <button data-z="back" title="Send to back" aria-label="Send to back">Back</button>
         <button data-z="front" title="Bring to front" aria-label="Bring to front">Front</button>

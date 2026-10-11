@@ -10,7 +10,7 @@ import { Renderer } from './render'
 import * as persist from './persist'
 import { searchShapes } from './search'
 import type { BoardState, Connector, Shape, ShapeType, Tool } from './types'
-import { DEFAULT_FONT_SIZE, GRID, MIN_SIZE } from './types'
+import { DEFAULT_FONT_SIZE, GRID, MIN_SIZE, defaultBorderWidth } from './types'
 import { Viewport } from './viewport'
 
 type DragMode = 'pan' | 'move' | 'resize' | 'marquee' | 'draw'
@@ -277,6 +277,17 @@ export class Editor {
     if (!shapes.length) return
     this.history.push(this.board.clone())
     for (const s of shapes) s.fontSize = Math.max(8, Math.min(96, (s.fontSize ?? DEFAULT_FONT_SIZE) + delta))
+    this.commit()
+  }
+
+  setBorderWidth(delta: number): void {
+    const shapes = this.selectedShapes()
+    if (!shapes.length) return
+    this.history.push(this.board.clone())
+    for (const s of shapes) {
+      const cur = s.borderWidth ?? defaultBorderWidth(s.type)
+      s.borderWidth = Math.max(0, Math.min(4, cur + delta))
+    }
     this.commit()
   }
 

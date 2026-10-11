@@ -439,6 +439,17 @@ body,
   color: #64748b;
 }
 
+/* ---- toolbar template select ---- */
+#template-select {
+  margin-left: 6px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 13px;
+}
+
 /* ---- search highlight ---- */
 .shape.search-match {
   outline: 2px solid #f59e0b;

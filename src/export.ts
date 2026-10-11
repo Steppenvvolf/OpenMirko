@@ -191,3 +191,25 @@ export async function downloadPNG(state: BoardState, scale = 2): Promise<void> {
   a.click()
   URL.revokeObjectURL(pngUrl)
 }
+
+/** Open the print dialog with the whole board rendered, for save-as-PDF. */
+export function printBoard(state: BoardState): void {
+  const svg = toSVG(state)
+  const iframe = document.createElement('iframe')
+  iframe.style.position = 'fixed'
+  iframe.style.right = '0'
+  iframe.style.bottom = '0'
+  iframe.style.width = '0'
+  iframe.style.height = '0'
+  iframe.style.border = '0'
+  document.body.appendChild(iframe)
+  const doc = iframe.contentDocument!
+  doc.open()
+  doc.write(
+    `<!doctype html><html><head><title>OpenMirko</title><style>html,body{margin:0;padding:0}svg{max-width:100%;height:auto;display:block}</style></head><body>${svg}</body></html>`,
+  )
+  doc.close()
+  iframe.contentWindow!.focus()
+  iframe.contentWindow!.print()
+  setTimeout(() => iframe.remove(), 2000)
+}

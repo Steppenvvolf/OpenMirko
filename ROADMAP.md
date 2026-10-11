@@ -16,7 +16,7 @@
 - [x] Shape library: diamond, triangle, hexagon, star, cloud
 - [x] Frames (group containers; move-containment works, no clipping yet)
 - [x] Mind-map auto-layout (sticky + connectors)
-- [x] Colors + font sizing per object (borders still TODO)
+- [x] Colors + font sizing + borders per object (rect/ellipse/frame; polygons have no border)
 - [x] Copy / paste / duplicate / align / distribute
 - [x] Grid + snap (ruler still TODO)
 
@@ -31,8 +31,8 @@
 
 - [ ] Multiple boards + folders (local first)
 - [ ] Comments / mentions
-- [ ] Templates
-- [x] Export PNG + SVG (PDF still TODO)
+- [x] Templates (blank, mind map, flowchart, kanban)
+- [x] Export PNG + SVG + PDF
 - [x] Search within a board (across multiple boards still TODO)
 
 ## v0.5 — shipping

@@ -30,6 +30,8 @@ export interface Shape {
   strokeWidth?: number
   /** Font size in px (shapes with text). */
   fontSize?: number
+  /** Border width in px (rect / ellipse / frame). */
+  borderWidth?: number
 }
 
 export interface Connector {
@@ -72,6 +74,11 @@ export const CONNECTOR_COLOR = '#64748B'
 export const MIN_SIZE = 24
 export const GRID = 28
 export const DEFAULT_FONT_SIZE = 15
+
+/** Default border width for shapes that support borders; 0 otherwise. */
+export function defaultBorderWidth(type: ShapeType): number {
+  return type === 'rect' || type === 'ellipse' || type === 'frame' ? 2 : 0
+}
 
 export function uid(prefix: string): string {
   return `${prefix}-${crypto.randomUUID().slice(0, 8)}`

@@ -3,7 +3,7 @@
 
 import type { Board } from './board'
 import type { Connector, Shape } from './types'
-import { DEFAULT_FONT_SIZE } from './types'
+import { DEFAULT_FONT_SIZE, defaultBorderWidth } from './types'
 import type { Viewport } from './viewport'
 
 const NS = 'http://www.w3.org/2000/svg'
@@ -70,6 +70,9 @@ export class Renderer {
       const body = el.firstElementChild as HTMLElement
       body.textContent = s.text || ''
       body.style.fontSize = `${s.fontSize ?? DEFAULT_FONT_SIZE}px`
+      if (s.type === 'rect' || s.type === 'ellipse' || s.type === 'frame') {
+        body.style.borderWidth = `${s.borderWidth ?? defaultBorderWidth(s.type)}px`
+      }
     }
   }
 

@@ -8,6 +8,7 @@ import { penBounds, scalePoints, translatePoints } from './pen'
 import { mindMapLayout } from './mindmap'
 import { Renderer } from './render'
 import * as persist from './persist'
+import { searchShapes } from './search'
 import type { BoardState, Connector, Shape, ShapeType, Tool } from './types'
 import { DEFAULT_FONT_SIZE, GRID, MIN_SIZE } from './types'
 import { Viewport } from './viewport'
@@ -66,6 +67,7 @@ export class Editor {
   private drag: DragState | null = null
   private clipboard: { shapes: Shape[]; connectors: Connector[] } | null = null
   snapEnabled = false
+  searchMatches = new Set<string>()
 
   constructor(
     private viewportEl: HTMLElement,
@@ -164,6 +166,14 @@ export class Editor {
       ...this.board.state.connectors.map((c) => c.id),
     ])
     this.refresh()
+  }
+
+  /** Highlight shapes whose text matches the query. */
+  search(query: string): void {
+    this.searchMatches = new Set(query.trim() ? searchShapes(this.board.state, query) : [])
+    for (const s of this.board.state.shapes) {
+      this.renderer.shapeEl(s.id)?.classList.toggle('search-match', this.searchMatches.has(s.id))
+    }
   }
 
   // ---- clipboard -----------------------------------------------------------

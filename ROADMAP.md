@@ -33,7 +33,7 @@
 - [ ] Comments / mentions
 - [ ] Templates
 - [x] Export PNG + SVG (PDF still TODO)
-- [ ] Search across boards
+- [x] Search within a board (across multiple boards still TODO)
 
 ## v0.5 — shipping
 

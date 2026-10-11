@@ -423,3 +423,24 @@ body,
   background: #b91c1c;
   color: #fff;
 }
+
+/* ---- toolbar search input ---- */
+#search-input {
+  margin-left: 8px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 13px;
+  width: 140px;
+}
+#search-input::placeholder {
+  color: #64748b;
+}
+
+/* ---- search highlight ---- */
+.shape.search-match {
+  outline: 2px solid #f59e0b;
+  outline-offset: 3px;
+}

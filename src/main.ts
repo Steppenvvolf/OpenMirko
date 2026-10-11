@@ -73,6 +73,10 @@ btn('btn-mindmap').addEventListener('click', () => {
   toast('Arranged as mind map')
 })
 
+// toolbar: search
+const searchInput = document.getElementById('search-input') as HTMLInputElement
+searchInput.addEventListener('input', () => editor.search(searchInput.value))
+
 // context bar: colors
 document.querySelectorAll<HTMLElement>('.swatch').forEach((s) => {
   s.addEventListener('click', () => editor.setColor(s.dataset.color!))

@@ -1,4 +1,5 @@
 import { Editor } from './editor'
+import { downloadPNG, downloadSVG } from './export'
 import * as persist from './persist'
 import type { AlignAxis } from './layout'
 import type { Tool } from './types'
@@ -39,6 +40,14 @@ btn('btn-reset').addEventListener('click', () => editor.viewport.reset())
 btn('btn-export').addEventListener('click', () => {
   persist.exportJSON(editor.board.clone())
   toast('Board exported as JSON')
+})
+btn('btn-export-svg').addEventListener('click', () => {
+  downloadSVG(editor.board.clone())
+  toast('Board exported as SVG')
+})
+btn('btn-export-png').addEventListener('click', async () => {
+  await downloadPNG(editor.board.clone())
+  toast('Board exported as PNG')
 })
 btn('btn-import').addEventListener('click', () => btn('file-input').click())
 btn('file-input').addEventListener('change', async (e) => {

@@ -32,7 +32,7 @@
 - [ ] Multiple boards + folders (local first)
 - [ ] Comments / mentions
 - [ ] Templates
-- [ ] Export PNG / SVG / PDF
+- [x] Export PNG + SVG (PDF still TODO)
 - [ ] Search across boards
 
 ## v0.5 — shipping

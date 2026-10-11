@@ -4,14 +4,23 @@ import { Board } from './board'
 import { History } from './history'
 import { alignShapes, distributeShapes, snapTo } from './layout'
 import type { AlignAxis } from './layout'
+import { penBounds, scalePoints, translatePoints } from './pen'
 import { Renderer } from './render'
 import * as persist from './persist'
 import type { BoardState, Connector, Shape, ShapeType, Tool } from './types'
 import { GRID, MIN_SIZE } from './types'
 import { Viewport } from './viewport'
 
-type DragMode = 'pan' | 'move' | 'resize' | 'marquee'
+type DragMode = 'pan' | 'move' | 'resize' | 'marquee' | 'draw'
 type Handle = 'nw' | 'ne' | 'sw' | 'se'
+
+interface OrigBox {
+  x: number
+  y: number
+  w: number
+  h: number
+  points?: { x: number; y: number }[]
+}
 
 interface DragState {
   mode: DragMode
@@ -22,7 +31,8 @@ interface DragState {
   moved: boolean
   created: boolean
   handle?: Handle
-  orig: Map<string, { x: number; y: number; w: number; h: number }>
+  orig: Map<string, OrigBox>
+  contained: Map<string, OrigBox>
   before: BoardState | null
 }
 
@@ -36,6 +46,8 @@ const TOOL_KEYS: Record<string, Tool> = {
   h: 'hexagon',
   a: 'star',
   l: 'cloud',
+  p: 'pen',
+  f: 'frame',
   t: 'text',
   c: 'connector',
 }
@@ -374,6 +386,16 @@ export class Editor {
       this.refresh()
       return
     }
+    if (this.tool === 'pen') {
+      const p = this.localPoint(e)
+      const w = this.viewport.toWorld(p.x, p.y)
+      const before = this.board.clone()
+      const shape = this.board.addShape('pen', w.x, w.y)
+      this.selection.clear()
+      this.selection.add(shape.id)
+      this.startDrag('draw', e, true, undefined, before)
+      return
+    }
     // shape tool: create and immediately drag
     const p = this.localPoint(e)
     const w = this.viewport.toWorld(p.x, p.y)
@@ -386,10 +408,25 @@ export class Editor {
 
   private startDrag(mode: DragMode, e: PointerEvent, created = false, handle?: Handle, before?: BoardState): void {
     const p = this.localPoint(e)
-    const orig = new Map<string, { x: number; y: number; w: number; h: number }>()
+    const orig = new Map<string, OrigBox>()
     for (const id of this.selection) {
       const s = this.board.shape(id)
-      if (s) orig.set(id, { x: s.x, y: s.y, w: s.w, h: s.h })
+      if (s) orig.set(id, this.captureOrig(s))
+    }
+    // When moving frames, also capture shapes contained inside them so the
+    // whole group moves together (contained shapes are not added to selection).
+    const contained = new Map<string, OrigBox>()
+    if (mode === 'move') {
+      for (const id of orig.keys()) {
+        const s = this.board.shape(id)
+        if (s && s.type === 'frame') {
+          for (const cid of this.board.shapesInside(id)) {
+            if (orig.has(cid) || contained.has(cid)) continue
+            const cs = this.board.shape(cid)
+            if (cs) contained.set(cid, this.captureOrig(cs))
+          }
+        }
+      }
     }
     this.drag = {
       mode,
@@ -401,9 +438,41 @@ export class Editor {
       created,
       handle,
       orig,
+      contained,
       before: before ?? this.board.clone(),
     }
-    this.viewportEl.setPointerCapture(e.pointerId)
+    try {
+      this.viewportEl.setPointerCapture(e.pointerId)
+    } catch {
+      // Pointer capture can fail (synthetic events, a released pointer). The
+      // drag still works because pointermove/up are handled on the viewport.
+    }
+  }
+
+  private captureOrig(s: Shape): OrigBox {
+    return { x: s.x, y: s.y, w: s.w, h: s.h, points: s.points ? s.points.map((p) => ({ ...p })) : undefined }
+  }
+
+  private moveShape(id: string, o: OrigBox, dw: number, dh: number): void {
+    const s = this.board.shape(id)
+    if (!s) return
+    let nx = o.x + dw
+    let ny = o.y + dh
+    if (this.snapEnabled) {
+      nx = snapTo(nx, GRID)
+      ny = snapTo(ny, GRID)
+    }
+    if (s.points && o.points) {
+      s.points = translatePoints(o.points, nx - o.x, ny - o.y)
+      const b = penBounds(s.points)
+      s.x = b.x
+      s.y = b.y
+      s.w = b.w
+      s.h = b.h
+    } else {
+      s.x = nx
+      s.y = ny
+    }
   }
 
   private onPointerMove(e: PointerEvent): void {
@@ -424,17 +493,8 @@ export class Editor {
       case 'move': {
         const dw = totalDX / this.viewport.zoom
         const dh = totalDY / this.viewport.zoom
-        for (const [id, o] of this.drag.orig) {
-          const s = this.board.shape(id)
-          if (s) {
-            s.x = o.x + dw
-            s.y = o.y + dh
-            if (this.snapEnabled) {
-              s.x = snapTo(s.x, GRID)
-              s.y = snapTo(s.y, GRID)
-            }
-          }
-        }
+        for (const [id, o] of this.drag.orig) this.moveShape(id, o, dw, dh)
+        for (const [id, o] of this.drag.contained) this.moveShape(id, o, dw, dh)
         this.refresh()
         break
       }
@@ -468,11 +528,33 @@ export class Editor {
             if (h === 'ne' || h === 'nw') y = o.y + o.h - MIN_SIZE
             nh = MIN_SIZE
           }
+          if (s.points && o.points) {
+            s.points = scalePoints(o.points, { x: o.x, y: o.y, w: o.w, h: o.h }, { x, y, w: nw, h: nh })
+          }
           s.x = x
           s.y = y
           s.w = nw
           s.h = nh
         }
+        this.refresh()
+        break
+      }
+      case 'draw': {
+        const w = this.viewport.toWorld(p.x, p.y)
+        for (const id of this.drag.orig.keys()) {
+          const s = this.board.shape(id)
+          if (!s || !s.points) continue
+          const last = s.points[s.points.length - 1]
+          if (!last || Math.hypot(w.x - last.x, w.y - last.y) > 2) {
+            s.points.push({ x: w.x, y: w.y })
+            const b = penBounds(s.points)
+            s.x = b.x
+            s.y = b.y
+            s.w = b.w
+            s.h = b.h
+          }
+        }
+        this.drag.moved = true
         this.refresh()
         break
       }

@@ -137,3 +137,33 @@ describe('Board copy/paste subgraph', () => {
     expect(pc.toId).toBe(shapeIds[1])
   })
 })
+
+describe('Board.shapesInside', () => {
+  it('returns shapes whose center is inside a frame, excluding itself and outside shapes', () => {
+    const b = makeBoard()
+    b.state.shapes.push(
+      { id: 'f', type: 'frame', x: 0, y: 0, w: 300, h: 300, text: 'F', color: '#fff' },
+      { id: 's1', type: 'rect', x: 50, y: 50, w: 100, h: 100, text: '', color: '#fff' }, // center (100,100)
+      { id: 's2', type: 'rect', x: 400, y: 400, w: 100, h: 100, text: '', color: '#fff' }, // center (450,450)
+    )
+    const inside = b.shapesInside('f')
+    expect(inside.has('s1')).toBe(true)
+    expect(inside.has('s2')).toBe(false)
+    expect(inside.has('f')).toBe(false)
+  })
+
+  it('finds shapes inside nested frames recursively', () => {
+    const b = makeBoard()
+    b.state.shapes.push(
+      { id: 'f', type: 'frame', x: 0, y: 0, w: 200, h: 200, text: '', color: '#fff' },
+      { id: 'f2', type: 'frame', x: 120, y: 120, w: 160, h: 160, text: '', color: '#fff' }, // center (200,200) = on f's edge
+      { id: 's3', type: 'rect', x: 240, y: 240, w: 20, h: 20, text: '', color: '#fff' }, // center (250,250): inside f2, NOT inside f
+      { id: 'sOut', type: 'rect', x: 400, y: 400, w: 50, h: 50, text: '', color: '#fff' },
+    )
+    const inside = b.shapesInside('f')
+    expect(inside.has('f2')).toBe(true)
+    expect(inside.has('s3')).toBe(true) // found only via the nested frame
+    expect(inside.has('sOut')).toBe(false)
+    expect(inside.has('f')).toBe(false)
+  })
+})

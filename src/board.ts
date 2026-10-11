@@ -24,6 +24,22 @@ export class Board {
 
   addShape(type: ShapeType, x: number, y: number): Shape {
     const d = SHAPE_DEFAULTS[type]
+    if (type === 'pen') {
+      const shape: Shape = {
+        id: uid('s'),
+        type,
+        x,
+        y,
+        w: 1,
+        h: 1,
+        text: '',
+        color: d.color,
+        points: [{ x, y }],
+        strokeWidth: 2.5,
+      }
+      this.state.shapes.push(shape)
+      return shape
+    }
     const shape: Shape = {
       id: uid('s'),
       type,
@@ -31,7 +47,7 @@ export class Board {
       y: y - d.h / 2,
       w: d.w,
       h: d.h,
-      text: '',
+      text: type === 'frame' ? 'Frame' : '',
       color: d.color,
     }
     this.state.shapes.push(shape)
@@ -84,7 +100,7 @@ export class Board {
       if (!ids.has(s.id)) continue
       const nid = uid('s')
       idMap.set(s.id, nid)
-      shapes.push({ ...s, id: nid })
+      shapes.push({ ...s, id: nid, points: s.points ? s.points.map((p) => ({ ...p })) : undefined })
     }
     const connectors: Connector[] = []
     for (const c of this.state.connectors) {
@@ -111,7 +127,13 @@ export class Board {
       const nid = uid('s')
       idMap.set(s.id, nid)
       shapeIds.push(nid)
-      this.state.shapes.push({ ...s, id: nid, x: s.x + dx, y: s.y + dy })
+      this.state.shapes.push({
+        ...s,
+        id: nid,
+        x: s.x + dx,
+        y: s.y + dy,
+        points: s.points ? s.points.map((p) => ({ x: p.x + dx, y: p.y + dy })) : undefined,
+      })
     }
     const connectorIds: string[] = []
     for (const c of sub.connectors) {
@@ -130,6 +152,32 @@ export class Board {
   /** A shape's center in world coordinates. */
   centerOf(s: Shape): { x: number; y: number } {
     return { x: s.x + s.w / 2, y: s.y + s.h / 2 }
+  }
+
+  /**
+   * Ids of all shapes (recursively, including nested frames) whose center
+   * lies inside the given frame's bounds. The frame itself is excluded.
+   */
+  shapesInside(frameId: string): Set<string> {
+    const result = new Set<string>()
+    const queue = [frameId]
+    const visited = new Set<string>([frameId])
+    while (queue.length) {
+      const fid = queue.pop()!
+      const f = this.shape(fid)
+      if (!f) continue
+      for (const s of this.state.shapes) {
+        if (visited.has(s.id)) continue
+        const cx = s.x + s.w / 2
+        const cy = s.y + s.h / 2
+        if (cx >= f.x && cx <= f.x + f.w && cy >= f.y && cy <= f.y + f.h) {
+          result.add(s.id)
+          visited.add(s.id)
+          if (s.type === 'frame') queue.push(s.id)
+        }
+      }
+    }
+    return result
   }
 
   /** The point on a shape's bounding box edge toward (tx, ty). */

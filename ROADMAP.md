@@ -12,9 +12,9 @@
 
 ## v0.2 — richer objects
 
-- [ ] Freehand pen
+- [x] Freehand pen (strokes + dots)
 - [x] Shape library: diamond, triangle, hexagon, star, cloud
-- [ ] Frames (group containers)
+- [x] Frames (group containers; move-containment works, no clipping yet)
 - [ ] Mind-map auto-layout (sticky + connectors)
 - [x] Colors per object (borders / font sizing still TODO)
 - [x] Copy / paste / duplicate / align / distribute

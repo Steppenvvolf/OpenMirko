@@ -86,6 +86,13 @@ body,
 #viewport[data-tool="sticky"],
 #viewport[data-tool="rect"],
 #viewport[data-tool="ellipse"],
+#viewport[data-tool="diamond"],
+#viewport[data-tool="triangle"],
+#viewport[data-tool="hexagon"],
+#viewport[data-tool="star"],
+#viewport[data-tool="cloud"],
+#viewport[data-tool="pen"],
+#viewport[data-tool="frame"],
 #viewport[data-tool="text"] {
   cursor: crosshair;
 }
@@ -149,6 +156,43 @@ body,
 .shape.selected .shape-body {
   outline: 2px solid #3b82f6;
   outline-offset: 1px;
+}
+
+/* ---- pen strokes ---- */
+.shape-pen .pen-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.shape-pen .pen-path {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.shape-pen.selected {
+  outline: 2px solid #3b82f6;
+  outline-offset: 1px;
+}
+
+/* ---- frames ---- */
+.shape {
+  z-index: 1;
+}
+.shape.shape-frame {
+  z-index: 0;
+}
+.shape-frame .shape-body {
+  background: var(--shape-color, #ffffff);
+  border: 2px dashed #94a3b8;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ---- connector layer ---- */

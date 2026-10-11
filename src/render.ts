@@ -20,6 +20,9 @@ export class Renderer {
   ) {}
 
   renderAll(): void {
+    // The canvas holds shapes in world coordinates; apply the viewport
+    // transform so they pan/zoom together with connectors and handles.
+    this.canvas.style.transform = this.viewport.cssTransform()
     this.renderShapes()
     this.renderConnectors()
   }
@@ -47,7 +50,7 @@ export class Renderer {
       el = document.createElement('div')
       el.className = `shape shape-${s.type}`
       el.dataset.id = s.id
-      el.innerHTML = `<div class="shape-body"></div>`
+      el.innerHTML = s.type === 'pen' ? `<svg class="pen-svg"><path class="pen-path"></path></svg>` : `<div class="shape-body"></div>`
       this.canvas.appendChild(el)
       this.shapeEls.set(s.id, el)
     }
@@ -59,8 +62,34 @@ export class Renderer {
     el.style.width = `${s.w}px`
     el.style.height = `${s.h}px`
     el.style.setProperty('--shape-color', s.color)
-    const body = el.firstElementChild as HTMLElement
-    body.textContent = s.text || ''
+    if (s.type === 'pen') {
+      this.applyPen(s, el)
+    } else {
+      const body = el.firstElementChild as HTMLElement
+      body.textContent = s.text || ''
+    }
+  }
+
+  private applyPen(s: Shape, el: HTMLElement): void {
+    const path = el.querySelector('.pen-path') as SVGPathElement | null
+    if (!path || !s.points || s.points.length === 0) return
+    const width = s.strokeWidth ?? 2.5
+    if (s.points.length === 1) {
+      // a single click -> a small dot centered in the bounding box
+      const r = Math.max(width, 2.5)
+      const cx = s.w / 2
+      const cy = s.h / 2
+      path.setAttribute('d', `M ${cx - r},${cy} a ${r},${r} 0 1,0 ${r * 2},0 a ${r},${r} 0 1,0 ${-r * 2},0 Z`)
+      path.setAttribute('fill', s.color)
+      path.setAttribute('stroke', 'none')
+      path.setAttribute('stroke-width', '0')
+    } else {
+      const d = 'M ' + s.points.map((p) => `${p.x - s.x},${p.y - s.y}`).join(' L ')
+      path.setAttribute('d', d)
+      path.setAttribute('fill', 'none')
+      path.setAttribute('stroke', s.color)
+      path.setAttribute('stroke-width', String(width))
+    }
   }
 
   renderConnectors(): void {

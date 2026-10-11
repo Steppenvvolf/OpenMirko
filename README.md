@@ -13,12 +13,13 @@ import boards as plain JSON.
 
 ## Status
 
-v0.2. A working single-player canvas: pan/zoom, nine shape types (sticky,
-rect, ellipse, diamond, triangle, hexagon, star, cloud, text), connectors,
-selection, resize, undo/redo, copy/paste/duplicate, align/distribute,
-snap-to-grid, per-shape colors, and JSON import/export. Ships as both a web
-app and a Tauri desktop app. Multiplayer and a sync server are the next
-milestone (see ROADMAP.md).
+v0.2. A working single-player canvas: pan/zoom, eleven shape types (sticky,
+rect, ellipse, diamond, triangle, hexagon, star, cloud, pen, frame, text),
+connectors, selection, resize, undo/redo, copy/paste/duplicate, align/distribute,
+snap-to-grid, per-shape colors, freehand drawing, frames that move their
+contained shapes, and JSON import/export. Ships as both a web app and a Tauri
+desktop app. Multiplayer and a sync server are the next milestone (see
+ROADMAP.md).
 
 ## Run it
 

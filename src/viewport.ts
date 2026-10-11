@@ -42,6 +42,11 @@ export class Viewport {
     this.zoom = 1
     this.onUpdate()
   }
+
+  /** CSS transform to apply to the world-space canvas so world coords map to screen. */
+  cssTransform(): string {
+    return `translate(${this.x}px, ${this.y}px) scale(${this.zoom})`
+  }
 }
 
 function clamp(n: number, lo: number, hi: number): number {

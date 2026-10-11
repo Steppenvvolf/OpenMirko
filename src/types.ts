@@ -9,6 +9,8 @@ export type ShapeType =
   | 'hexagon'
   | 'star'
   | 'cloud'
+  | 'pen'
+  | 'frame'
   | 'text'
 export type ConnectorKind = 'arrow' | 'line'
 export type Tool = 'select' | ShapeType | 'connector'
@@ -22,6 +24,10 @@ export interface Shape {
   h: number
   text: string
   color: string
+  /** Pen strokes only: polyline points in world coordinates. */
+  points?: { x: number; y: number }[]
+  /** Pen stroke width in world units. */
+  strokeWidth?: number
 }
 
 export interface Connector {
@@ -54,6 +60,8 @@ export const SHAPE_DEFAULTS: Record<ShapeType, ShapeDefaults> = {
   hexagon: { w: 180, h: 156, color: '#D1FAE5', label: 'Hexagon' },
   star: { w: 180, h: 180, color: '#FEF08A', label: 'Star' },
   cloud: { w: 200, h: 120, color: '#E0F2FE', label: 'Cloud' },
+  pen: { w: 100, h: 100, color: '#1E293B', label: 'Pen' },
+  frame: { w: 800, h: 500, color: '#FFFFFF', label: 'Frame' },
   text: { w: 180, h: 48, color: 'transparent', label: 'Text' },
 }
 

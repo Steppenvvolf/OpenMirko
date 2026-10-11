@@ -55,4 +55,16 @@ describe('Viewport transforms', () => {
     expect(vp.y).toBe(0)
     expect(vp.zoom).toBe(1)
   })
+
+  it('cssTransform maps world coords to screen via translate + scale', () => {
+    const vp = new Viewport(noop)
+    expect(vp.cssTransform()).toBe('translate(0px, 0px) scale(1)')
+    vp.pan(30, -12)
+    vp.zoomAt(0, 0, 2)
+    expect(vp.cssTransform()).toBe(`translate(${vp.x}px, ${vp.y}px) scale(${vp.zoom})`)
+    // a world point (10, 20) maps to (10*zoom + x, 20*zoom + y)
+    const s = vp.toScreen(10, 20)
+    expect(s.x).toBeCloseTo(10 * vp.zoom + vp.x)
+    expect(s.y).toBeCloseTo(20 * vp.zoom + vp.y)
+  })
 })

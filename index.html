@@ -26,6 +26,7 @@
       <button data-tool="cloud" title="Cloud (L)" aria-label="Cloud">Cloud</button>
       <button data-tool="pen" title="Pen (P)" aria-label="Pen">Pen</button>
       <button data-tool="frame" title="Frame (F)" aria-label="Frame">Frame</button>
+      <button data-tool="ruler" title="Ruler / measure (M)" aria-label="Ruler">Ruler</button>
       <button data-tool="text" title="Text (T)" aria-label="Text">Text</button>
       <button data-tool="connector" title="Arrow (C)" aria-label="Connector">Arrow</button>
       <span class="sep"></span>
@@ -60,6 +61,10 @@
       <svg id="connectors"></svg>
       <div id="handles"></div>
       <div id="marquee"></div>
+      <svg id="measure" class="measure" hidden>
+        <line id="measure-line"></line>
+        <text id="measure-label"></text>
+      </svg>
 
       <div id="contextbar" class="contextbar" hidden>
         <div class="cb-colors">

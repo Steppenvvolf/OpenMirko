@@ -18,9 +18,9 @@
 - [x] Mind-map auto-layout (sticky + connectors)
 - [x] Colors + font sizing + borders per object (rect/ellipse/frame; polygons have no border)
 - [x] Copy / paste / duplicate / align / distribute
-- [x] Grid + snap (ruler still TODO)
+- [x] Grid + snap + ruler (measure tool)
 
-## v0.3 — collaboration
+## v0.3 — collaboration (deferred: single-user for now, build later)
 
 - [ ] Yjs CRDT document model
 - [ ] Presence (cursors, live editing)
@@ -29,8 +29,9 @@
 
 ## v0.4 — boards at scale
 
-- [x] Multiple boards (local first; folders still TODO)
-- [ ] Comments / mentions
+- [x] Multiple boards (local first)
+- [ ] Comments / mentions (deferred: needs multiplayer)
+- [ ] Folders (board organization; deferred)
 - [x] Templates (blank, mind map, flowchart, kanban)
 - [x] Export PNG + SVG + PDF
 - [x] Search within a board (across multiple boards still TODO)

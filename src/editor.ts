@@ -13,7 +13,7 @@ import type { BoardState, Connector, Shape, ShapeType, Tool } from './types'
 import { DEFAULT_FONT_SIZE, GRID, MIN_SIZE, defaultBorderWidth } from './types'
 import { Viewport } from './viewport'
 
-type DragMode = 'pan' | 'move' | 'resize' | 'marquee' | 'draw'
+type DragMode = 'pan' | 'move' | 'resize' | 'marquee' | 'draw' | 'measure'
 type Handle = 'nw' | 'ne' | 'sw' | 'se'
 
 interface OrigBox {
@@ -50,6 +50,7 @@ const TOOL_KEYS: Record<string, Tool> = {
   l: 'cloud',
   p: 'pen',
   f: 'frame',
+  m: 'ruler',
   t: 'text',
   c: 'connector',
 }
@@ -423,6 +424,11 @@ export class Editor {
     }
     if (e.button !== 0) return
 
+    if (this.tool === 'ruler') {
+      this.startDrag('measure', e)
+      return
+    }
+
     const target = e.target as HTMLElement
 
     const handleEl = target.closest('.handle') as HTMLElement | null
@@ -658,6 +664,12 @@ export class Editor {
         this.refresh()
         break
       }
+      case 'measure': {
+        const start = this.viewport.toWorld(this.drag.startSX, this.drag.startSY)
+        const cur = this.viewport.toWorld(p.x, p.y)
+        this.updateMeasure(start, cur)
+        break
+      }
       case 'marquee': {
         this.drawMarquee(this.drag.startSX, this.drag.startSY, p.x, p.y)
         break
@@ -675,6 +687,9 @@ export class Editor {
       this.applyMarqueeSelection(drag.startSX, drag.startSY, drag.lastSX, drag.lastSY)
       return
     }
+
+    // measurement is transient and leaves no board change
+    if (drag.mode === 'measure') return
 
     // push history for move/resize only if something actually changed,
     // or always for a created shape
@@ -855,9 +870,36 @@ export class Editor {
   setTool(tool: Tool): void {
     this.tool = tool
     this.connectorSource = null
+    this.hideMeasure()
     this.viewportEl.dataset.tool = tool
     document.querySelectorAll('.toolbar [data-tool]').forEach((b) => {
       b.classList.toggle('active', (b as HTMLElement).dataset.tool === tool)
     })
+  }
+
+  private updateMeasure(a: { x: number; y: number }, b: { x: number; y: number }): void {
+    const svg = document.getElementById('measure')
+    const line = document.getElementById('measure-line') as SVGLineElement | null
+    const label = document.getElementById('measure-label') as SVGTextElement | null
+    if (!svg || !line || !label) return
+    const sa = this.viewport.toScreen(a.x, a.y)
+    const sb = this.viewport.toScreen(b.x, b.y)
+    const dx = b.x - a.x
+    const dy = b.y - a.y
+    const dist = Math.round(Math.hypot(dx, dy))
+    const angle = Math.round(Math.abs((Math.atan2(dy, dx) * 180) / Math.PI))
+    svg.hidden = false
+    line.setAttribute('x1', String(sa.x))
+    line.setAttribute('y1', String(sa.y))
+    line.setAttribute('x2', String(sb.x))
+    line.setAttribute('y2', String(sb.y))
+    label.setAttribute('x', String((sa.x + sb.x) / 2 + 8))
+    label.setAttribute('y', String((sa.y + sb.y) / 2 - 8))
+    label.textContent = `${dist} px · ${angle}°`
+  }
+
+  private hideMeasure(): void {
+    const svg = document.getElementById('measure')
+    if (svg) svg.hidden = true
   }
 }

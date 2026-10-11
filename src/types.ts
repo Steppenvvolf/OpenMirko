@@ -13,7 +13,7 @@ export type ShapeType =
   | 'frame'
   | 'text'
 export type ConnectorKind = 'arrow' | 'line'
-export type Tool = 'select' | ShapeType | 'connector'
+export type Tool = 'select' | ShapeType | 'connector' | 'ruler'
 
 export interface Shape {
   id: string
